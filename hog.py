@@ -108,6 +108,9 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     """
     who = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     "*** YOUR CODE HERE ***"
+    while score0 <goal and score1 <goal:
+      
+
     return score0, score1  # You may want to change this line.
 
 #######################
