@@ -108,10 +108,16 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     """
     who = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     "*** YOUR CODE HERE ***"
-    while score0 <goal and score1 <goal:
-      
+    scores=[score0,score1]
+    strategies=[strategy0,strategy1]
+    while scores[0] <goal and scores[1] <goal:
 
-    return score0, score1  # You may want to change this line.
+      scores[who]+=take_turn(strategies[who](scores[who],scores[other(who)]),scores[other(who)],select_dice(scores[who],scores[other(who)]))
+      if scores[0]==2*scores[1] or scores[1]==2*scores[0]:
+        scores[0],scores[1]=scores[1],scores[0]
+      who=other(who)
+
+    return scores[0], scores[1]  # You may want to change this line.
 
 #######################
 # Phase 2: Strategies #
