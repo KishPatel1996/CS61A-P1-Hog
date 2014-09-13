@@ -234,7 +234,9 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=5):
     and rolls NUM_ROLLS otherwise.
     """
     "*** YOUR CODE HERE ***"
-    return None # Replace this statement
+    if abs(opponent_score%10 - opponent_score//10) + 1>=margin:
+      return 0
+    return num_rolls # Replace this statement
 
 def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
     """This strategy rolls 0 dice when it would result in a beneficial swap and
@@ -243,7 +245,11 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
     NUM_ROLLS otherwise.
     """
     "*** YOUR CODE HERE ***"
-    return None # Replace this statement
+    if 2 * (score+abs(opponent_score%10 - opponent_score//10) + 1 )== opponent_score:
+      return 0
+    elif (score+ abs(opponent_score%10 - opponent_score//10) + 1) == 2 * opponent_score:
+      return num_rolls
+    return bacon_strategy(score,opponent_score,margin,num_rolls) # Replace this statement
 
 
 def final_strategy(score, opponent_score):
