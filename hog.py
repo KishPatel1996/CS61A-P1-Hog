@@ -180,6 +180,16 @@ def max_scoring_num_rolls(dice=six_sided):
     10
     """
     "*** YOUR CODE HERE ***"
+    roll = 1
+    average = make_averaged(roll_dice)(roll,dice)
+    i=1
+    while i <=10:
+      temp_average=make_averaged(roll_dice)(i,dice)
+      print(temp_average)
+      if temp_average>average:
+        average,roll=temp_average,i
+      i+=1
+    return roll
 
 def winner(strategy0, strategy1):
     """Return 0 if strategy0 wins against strategy1, and 1 otherwise."""
