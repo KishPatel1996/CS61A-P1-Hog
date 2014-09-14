@@ -185,7 +185,7 @@ def max_scoring_num_rolls(dice=six_sided):
     i=1
     while i <=10:
       temp_average=make_averaged(roll_dice)(i,dice)
-      print(temp_average)
+      #print(temp_average)
       if temp_average>average:
         average,roll=temp_average,i
       i+=1
@@ -207,7 +207,7 @@ def average_win_rate(strategy, baseline=always_roll(5)):
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True: # Change to False when done finding max_scoring_num_rolls
+    if False: # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
         four_sided_max = max_scoring_num_rolls(four_sided)
@@ -221,9 +221,15 @@ def run_experiments():
 
     if False: # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
+    i,total=0,0
+    while i<50:
 
-    if False: # Change to True to test final_strategy
-        print('final_strategy win rate:', average_win_rate(final_strategy))
+      if True: # Change to True to test final_strategy
+          temp=average_win_rate(final_strategy)
+          print('final_strategy win rate:', temp)
+          i,total=i+1,total+temp
+    print('average of final',total/i)
+
 
     "*** You may add additional experiments as you wish ***"
 
@@ -254,11 +260,55 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
 
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
-
+    if opponent is winning, try to swap.
+    if opponent is losing drastically, play it safe
     *** YOUR DESCRIPTION HERE ***
     """
     "*** YOUR CODE HERE ***"
-    return 5 # Replace this statement
+
+    if 2 * (score+abs(opponent_score%10 - opponent_score//10) + 1 )== opponent_score and opponent_score-(score+abs(opponent_score%10 - opponent_score//10) + 1)>=5:
+      return 0
+
+    dice=None
+    if (score + abs(opponent_score%10 - opponent_score//10) + 1 + opponent_score) % 7 == 0:
+      dice = 4
+    else:
+      dice = 6
+
+
+
+    if dice==4:
+
+      if opponent_score-score>25:
+        return 7
+      elif opponent_score - score>15:
+        return 5
+      elif opponent_score-score>5:
+        return 3
+      elif (score+abs(opponent_score%10 - opponent_score//10) + 1 +opponent_score)%7==0 and abs(opponent_score%10 - opponent_score//10)+1>=5:
+        return 0
+      else:
+        return 2
+
+    else:
+      if score>=97:
+        return 1
+      elif score>=94 and score-opponent_score>=10:
+        return 2
+      if score>=87 and score-opponent_score>=15:
+        return 3
+      elif score-opponent_score >=5:
+        return 5
+      elif score-opponent_score>=0 and (score+abs(opponent_score%10 - opponent_score//10) + 1 +opponent_score)%7==0:
+        return 0
+      elif score-opponent_score>=-10:
+          return 5
+      elif score-opponent_score>=-15:
+        return 6
+      else:
+        return 7
+
+     # Replace this statement
 
 
 ##########################
