@@ -222,7 +222,7 @@ def run_experiments():
     if False: # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
     i,total=0,0
-    while i<50:
+    while i<100:
 
       if True: # Change to True to test final_strategy
           temp=average_win_rate(final_strategy)
@@ -265,12 +265,22 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     "*** YOUR CODE HERE ***"
+# guaranteed win scenarios.  When a free bacon guarantees the player will win.  Also checks for no swine swap.
+    i=1
+    hog_wild_result= abs(opponent_score%10 - opponent_score//10)+1
+    diff_in_score= score-opponent_score #larger positive number means score owner is beating opponent_score owner
+    dice=None
+    while i<=10:
+      if score>=100-i and hog_wild_result>=i and score+hog_wild_result != 2 * opponent_score:
+        return 0
+      i+=1
 
-    if 2 * (score+abs(opponent_score%10 - opponent_score//10) + 1 )== opponent_score and opponent_score-(score+abs(opponent_score%10 - opponent_score//10) + 1)>=5:
+
+    if 2 * (score+hog_wild_result )== opponent_score and opponent_score-(score+hog_wild_result)>=5:
       return 0
 
-    dice=None
-    if (score + abs(opponent_score%10 - opponent_score//10) + 1 + opponent_score) % 7 == 0:
+
+    if (score + hog_wild_result + opponent_score) % 7 == 0:
       dice = 4
     else:
       dice = 6
@@ -279,27 +289,31 @@ def final_strategy(score, opponent_score):
 
     if dice==4:
 
-      if opponent_score-score>25:
+      if diff_in_score< -25:
         return 7
-      elif opponent_score - score>15:
+      elif diff_in_score< -15:
         return 5
-      elif opponent_score-score>5:
-        return 3
-      elif (score+abs(opponent_score%10 - opponent_score//10) + 1 +opponent_score)%7==0 and abs(opponent_score%10 - opponent_score//10)+1>=5:
+      elif diff_in_score <-5:
+        return 4
+      elif (score+hog_wild_result +opponent_score)%7==0:
         return 0
+      elif diff_in_score >10:
+        return 3
       else:
         return 2
 
     else:
+
+
       if score>=97:
         return 1
-      elif score>=94 and score-opponent_score>=10:
+      elif score>=94:
         return 2
-      if score>=87 and score-opponent_score>=15:
+      elif score>=87:
         return 3
       elif score-opponent_score >=5:
         return 5
-      elif score-opponent_score>=0 and (score+abs(opponent_score%10 - opponent_score//10) + 1 +opponent_score)%7==0:
+      elif score-opponent_score>=0 and (hog_wild_result +opponent_score)%7==0:
         return 0
       elif score-opponent_score>=-10:
           return 5
