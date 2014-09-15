@@ -115,9 +115,9 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
       num_rolls= strategies[who](scores[who],scores[other(who)])
       opponent_score=scores[other(who)]
       dice=select_dice(scores[who],scores[other(who)])
-
-      #scores[who]+=take_turn(strategies[who](scores[who],scores[other(who)]),scores[other(who)],select_dice(scores[who],scores[other(who)]))
       scores[who]+=take_turn(num_rolls,opponent_score,dice)
+
+      #checks for swine swap
       if scores[0]==2*scores[1] or scores[1]==2*scores[0]:
         scores[0],scores[1]=scores[1],scores[0]
       who=other(who)
@@ -147,7 +147,7 @@ def always_roll(n):
 
 # Experiments
 
-def make_averaged(fn, num_samples=100000):
+def make_averaged(fn, num_samples=10000):
     """Return a function that returns the average_value of FN when called.
 
     To implement this function, you will have to use *args syntax, a new Python
@@ -254,42 +254,47 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
     NUM_ROLLS otherwise.
     """
     "*** YOUR CODE HERE ***"
-    if 2 * (score+abs(opponent_score%10 - opponent_score//10) + 1 )== opponent_score:
+
+    hog_wild_result= abs(opponent_score%10 - opponent_score//10)+1
+    if 2 * (score+hog_wild_result)== opponent_score:
       return 0
-    elif (score+ abs(opponent_score%10 - opponent_score//10) + 1) == 2 * opponent_score:
+    elif (score+ hog_wild_result) == 2 * opponent_score:
       return num_rolls
     return bacon_strategy(score,opponent_score,margin,num_rolls) # Replace this statement
 
 
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
-    if opponent is winning, try to swap.
-    if opponent is losing drastically, play it safe
+
     *** YOUR DESCRIPTION HERE ***
+    go for guaranteed wins.  If none, check for swap.  If none, roll more risky if losing.  Roll more safe when winning
     """
     "*** YOUR CODE HERE ***"
-# guaranteed win scenarios.  When a free bacon guarantees the player will win.  Also checks for no swine swap.
+
     i=1
     hog_wild_result= abs(opponent_score%10 - opponent_score//10)+1
     diff_in_score= score-opponent_score #larger positive number means score owner is beating opponent_score owner
     dice=None
+
+
+    # While loop runs through guaranteed win scenarios.  Using free bacon to guarantee victory
     while i<=10:
       if score>=100-i and hog_wild_result>=i and score+hog_wild_result != 2 * opponent_score:
         return 0
       i+=1
 
-
+  # swine swap is nearly always helpful
     if 2 * (score+hog_wild_result )== opponent_score and opponent_score-(score+hog_wild_result)>=5:
       return 0
 
-
+  # checks dice sides
     if (score + hog_wild_result + opponent_score) % 7 == 0:
       dice = 4
     else:
       dice = 6
 
 
-
+    # checks diff in score.  Then rolls more risky if losing and more safe when winning
     if dice==4:
 
       if diff_in_score< -25:
@@ -306,7 +311,6 @@ def final_strategy(score, opponent_score):
         return 2
 
     else:
-
 
       if score>=97:
         return 1
@@ -325,7 +329,7 @@ def final_strategy(score, opponent_score):
       else:
         return 7
 
-    
+
 
 
 ##########################
