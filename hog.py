@@ -111,8 +111,13 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     scores=[score0,score1]
     strategies=[strategy0,strategy1]
     while scores[0] <goal and scores[1] <goal:
+      #parameters set for take_turn
+      num_rolls= strategies[who](scores[who],scores[other(who)])
+      opponent_score=scores[other(who)]
+      dice=select_dice(scores[who],scores[other(who)])
+      scores[who]+=take_turn(num_rolls,opponent_score,dice)
 
-      scores[who]+=take_turn(strategies[who](scores[who],scores[other(who)]),scores[other(who)],select_dice(scores[who],scores[other(who)]))
+      #checks for swine swap
       if scores[0]==2*scores[1] or scores[1]==2*scores[0]:
         scores[0],scores[1]=scores[1],scores[0]
       who=other(who)
@@ -142,7 +147,7 @@ def always_roll(n):
 
 # Experiments
 
-def make_averaged(fn, num_samples=1000):
+def make_averaged(fn, num_samples=10000):
     """Return a function that returns the average_value of FN when called.
 
     To implement this function, you will have to use *args syntax, a new Python
@@ -161,6 +166,14 @@ def make_averaged(fn, num_samples=1000):
     Thus, the average value is 6.0.
     """
     "*** YOUR CODE HERE ***"
+    def fun_func(*args):
+      total=0
+      num=num_samples
+      while num>0:
+        total+=fn(*args)
+        num-=1
+      return total/num_samples
+    return fun_func
 
 def max_scoring_num_rolls(dice=six_sided):
     """Return the number of dice (1 to 10) that gives the highest average turn
@@ -172,6 +185,16 @@ def max_scoring_num_rolls(dice=six_sided):
     10
     """
     "*** YOUR CODE HERE ***"
+    roll = 1
+    average = make_averaged(roll_dice)(roll,dice)
+    i=1
+    while i <=10:
+      temp_average=make_averaged(roll_dice)(i,dice)
+      #print(temp_average)
+      if temp_average>average:
+        average,roll=temp_average,i
+      i+=1
+    return roll
 
 def winner(strategy0, strategy1):
     """Return 0 if strategy0 wins against strategy1, and 1 otherwise."""
@@ -189,7 +212,7 @@ def average_win_rate(strategy, baseline=always_roll(5)):
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True: # Change to False when done finding max_scoring_num_rolls
+    if False: # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
         four_sided_max = max_scoring_num_rolls(four_sided)
@@ -204,8 +227,12 @@ def run_experiments():
     if False: # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
 
-    if False: # Change to True to test final_strategy
+
+    if True: # Change to True to test final_strategy
         print('final_strategy win rate:', average_win_rate(final_strategy))
+
+
+
 
     "*** You may add additional experiments as you wish ***"
 
@@ -216,7 +243,9 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=5):
     and rolls NUM_ROLLS otherwise.
     """
     "*** YOUR CODE HERE ***"
-    return None # Replace this statement
+    if abs(opponent_score%10 - opponent_score//10) + 1>=margin:
+      return 0
+    return num_rolls # Replace this statement
 
 def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
     """This strategy rolls 0 dice when it would result in a beneficial swap and
@@ -225,16 +254,82 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=5):
     NUM_ROLLS otherwise.
     """
     "*** YOUR CODE HERE ***"
-    return None # Replace this statement
+
+    hog_wild_result= abs(opponent_score%10 - opponent_score//10)+1
+    if 2 * (score+hog_wild_result)== opponent_score:
+      return 0
+    elif (score+ hog_wild_result) == 2 * opponent_score:
+      return num_rolls
+    return bacon_strategy(score,opponent_score,margin,num_rolls) # Replace this statement
 
 
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
 
     *** YOUR DESCRIPTION HERE ***
+    go for guaranteed wins.  If none, check for swap.  If none, roll more risky if losing.  Roll more safe when winning
     """
     "*** YOUR CODE HERE ***"
-    return 5 # Replace this statement
+
+    i=1
+    hog_wild_result= abs(opponent_score%10 - opponent_score//10)+1
+    diff_in_score= score-opponent_score #larger positive number means score owner is beating opponent_score owner
+    dice=None
+
+
+    # While loop runs through guaranteed win scenarios.  Using free bacon to guarantee victory
+    while i<=10:
+      if score>=100-i and hog_wild_result>=i and score+hog_wild_result != 2 * opponent_score:
+        return 0
+      i+=1
+
+  # swine swap is nearly always helpful
+    if 2 * (score+hog_wild_result )== opponent_score and opponent_score-(score+hog_wild_result)>=5:
+      return 0
+
+  # checks dice sides
+    if (score + hog_wild_result + opponent_score) % 7 == 0:
+      dice = 4
+    else:
+      dice = 6
+
+
+    # checks diff in score.  Then rolls more risky if losing and more safe when winning
+    if dice==4:
+
+      if diff_in_score< -25:
+        return 7
+      elif diff_in_score< -15:
+        return 5
+      elif diff_in_score <-5:
+        return 4
+      elif (score+hog_wild_result +opponent_score)%7==0:
+        return 0
+      elif diff_in_score >10:
+        return 3
+      else:
+        return 2
+
+    else:
+
+      if score>=97:
+        return 1
+      elif score>=94:
+        return 2
+      elif score>=87:
+        return 3
+      elif diff_in_score >=5:
+        return 5
+      elif diff_in_score>=0 and (hog_wild_result +opponent_score)%7==0:
+        return 0
+      elif diff_in_score>=-10:
+          return 5
+      elif diff_in_score>=-15:
+        return 6
+      else:
+        return 7
+
+
 
 
 ##########################
