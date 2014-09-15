@@ -142,7 +142,7 @@ def always_roll(n):
 
 # Experiments
 
-def make_averaged(fn, num_samples=1000):
+def make_averaged(fn, num_samples=100000):
     """Return a function that returns the average_value of FN when called.
 
     To implement this function, you will have to use *args syntax, a new Python
@@ -221,14 +221,12 @@ def run_experiments():
 
     if False: # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
-    i,total=0,0
-    while i<100:
 
-      if True: # Change to True to test final_strategy
-          temp=average_win_rate(final_strategy)
-          print('final_strategy win rate:', temp)
-          i,total=i+1,total+temp
-    print('average of final',total/i)
+
+    if True: # Change to True to test final_strategy
+        print('final_strategy win rate:', average_win_rate(final_strategy))
+
+
 
 
     "*** You may add additional experiments as you wish ***"
