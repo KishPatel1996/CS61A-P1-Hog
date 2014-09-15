@@ -111,8 +111,13 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     scores=[score0,score1]
     strategies=[strategy0,strategy1]
     while scores[0] <goal and scores[1] <goal:
+      #parameters set for take_turn
+      num_rolls= strategies[who](scores[who],scores[other(who)])
+      opponent_score=scores[other(who)]
+      dice=select_dice(scores[who],scores[other(who)])
 
-      scores[who]+=take_turn(strategies[who](scores[who],scores[other(who)]),scores[other(who)],select_dice(scores[who],scores[other(who)]))
+      #scores[who]+=take_turn(strategies[who](scores[who],scores[other(who)]),scores[other(who)],select_dice(scores[who],scores[other(who)]))
+      scores[who]+=take_turn(num_rolls,opponent_score,dice)
       if scores[0]==2*scores[1] or scores[1]==2*scores[0]:
         scores[0],scores[1]=scores[1],scores[0]
       who=other(who)
@@ -309,18 +314,18 @@ def final_strategy(score, opponent_score):
         return 2
       elif score>=87:
         return 3
-      elif score-opponent_score >=5:
+      elif diff_in_score >=5:
         return 5
-      elif score-opponent_score>=0 and (hog_wild_result +opponent_score)%7==0:
+      elif diff_in_score>=0 and (hog_wild_result +opponent_score)%7==0:
         return 0
-      elif score-opponent_score>=-10:
+      elif diff_in_score>=-10:
           return 5
-      elif score-opponent_score>=-15:
+      elif diff_in_score>=-15:
         return 6
       else:
         return 7
 
-     # Replace this statement
+    
 
 
 ##########################
