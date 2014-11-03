@@ -27,11 +27,11 @@ def roll_dice(num_rolls, dice=six_sided):
         count+=1
         if dice_roll==1:
             rolled_one=True
-        if rolled_one:
-            total=1
+
         else:
             total=total+dice_roll
-
+    if rolled_one:
+        total=1
     return total
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
@@ -186,10 +186,11 @@ def max_scoring_num_rolls(dice=six_sided):
     """
     "*** YOUR CODE HERE ***"
     roll = 1
-    average = make_averaged(roll_dice)(roll,dice)
+    average_maker = make_averaged(roll_dice)
+    average=average_maker(roll,dice)
     i=1
     while i <=10:
-      temp_average=make_averaged(roll_dice)(i,dice)
+      temp_average=average_maker(i,dice)
       #print(temp_average)
       if temp_average>average:
         average,roll=temp_average,i
